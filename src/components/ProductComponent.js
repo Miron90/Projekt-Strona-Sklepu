@@ -9,9 +9,11 @@ import "../static/css/fontello.css";
 function deleteProduct(productName, token, rerenderParentCallback) {
   if (window.confirm("Na pewno chcesz usunąć tyen przedmiot?")) {
     axios
-      .post("http://127.0.0.1:8000/deleteproduct/", {
-        productName: productName,
-        token: token,
+      .delete("http://127.0.0.1:8000/deleteproduct/", {
+        data: {
+          productName: productName,
+          token: token,
+        },
       })
       .then((res) => {
         rerenderParentCallback();
@@ -23,7 +25,13 @@ function deleteProduct(productName, token, rerenderParentCallback) {
 }
 class Product extends React.Component {
   render() {
-    const { product, token, rerenderParentCallback } = this.props;
+    const {
+      product,
+      token,
+      rerenderParentCallback,
+      page,
+      howmany,
+    } = this.props;
     return (
       <React.Fragment>
         <div className="product-container-flex-row">
@@ -43,7 +51,12 @@ class Product extends React.Component {
               className="product-edit-link"
               to={{
                 pathname: "/product/editor",
-                state: { productName: product.productName, token: token },
+                state: {
+                  productName: product.productName,
+                  token: token,
+                  page: page,
+                  howmany: howmany,
+                },
               }}
             >
               <Popup

@@ -16,11 +16,16 @@ urlpatterns = [
     path('deleteproduct/', views.delete_product, name='add-user'),
     path('editproduct/', views.edit_product, name='add-user'),
     path('addproduct/', views.add_product, name='add-user'),
+
+    path('addsubcategory/', views.add_subcategory, name='add-user'),
     path('searchproducts/<search>/<page>/<slug>/', views.search_products, name='add-user'),
-    path('getproducts/<page>/<slug>/', views.get_products, name='add-user'),
+    path('getproducts/<page>/<howManyPerPage>/', views.get_products, name='add-user'),
     path('getproduct/<productName>/', views.get_product, name='add-user'),
-    path('getallcategories/', views.get_all_categories, name='add-user'),
+
     path('getsubcategories/<slug>/', views.get_sub_categories, name='add-user'),
+
+    path('addcategory/', views.categories, name='add-user'),
+    path('getallcategories/', views.categories, name='add-user'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

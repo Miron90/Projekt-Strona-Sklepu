@@ -2,9 +2,27 @@ import React from "react";
 import { withRouter, Redirect } from "react-router-dom";
 
 import { connect } from "react-redux";
-import { Button, Form, Dropdown, Image, Message } from "semantic-ui-react";
-
-import axios from "axios";
+import {
+  Button,
+  Form,
+  Dropdown,
+  Image,
+  Message,
+  Popup,
+  Grid,
+  Header,
+  Label,
+  Input,
+} from "semantic-ui-react";
+import {
+  collectProductData,
+  editProduct,
+  addProduct,
+  getSubCategories,
+  getAllCategories,
+  addCategory,
+  addSubcategory,
+} from "../fetch/fetchProductEditor";
 
 import "../static/css/index.min.css";
 import "../static/css/productEditor.min.css";
@@ -35,132 +53,13 @@ class ProductEditor extends React.PureComponent {
     changedCategory: false,
     subCategoryAfterChange: 1,
     token: null,
+    newCategory: "",
+    newSubcategory: "",
+    catError: "",
+    subcatError: "",
   };
-  getAllCategories() {
-    axios
-      .get("http://127.0.0.1:8000/getallcategories/", {})
-      .then((res) => {
-        if (!res.data.error) {
-          if (res.data.length > 0) {
-            var categoriesOptions = [];
-            for (var i = 0; i < res.data.length; i++) {
-              categoriesOptions[i] = { text: res.data[i].name, value: i + 1 };
-            }
-            if (
-              this.state.categoriesOptions.length < categoriesOptions.length
-            ) {
-              this.state.categoriesOptions = categoriesOptions;
-              this.forceUpdate();
-            }
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-  getSubCategories(category) {
-    console.log(category);
-    axios
-      .get("http://127.0.0.1:8000/getsubcategories/" + category + "/")
-      .then((res) => {
-        if (!res.data.error) {
-          console.log(res.data);
-          if (res.data.length > 0) {
-            var categoriesOptions = [];
-            for (var i = 0; i < res.data.length; i++) {
-              categoriesOptions[i] = { text: res.data[i].name, value: i + 1 };
-            }
-            this.state.subCategoriesOptions = categoriesOptions;
-            this.forceUpdate();
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-  addProduct(
-    productName,
-    description,
-    shortDescription,
-    price,
-    quantity,
-    image,
-    category,
-    subcategory,
-    token
-  ) {
-    const formData = new FormData();
-    formData.append("productName", productName);
-    formData.append("description", description);
-    formData.append("shortDescription", shortDescription);
-    formData.append("price", price);
-    formData.append("quantity", quantity);
-    formData.append("image", image);
-    formData.append("category", category);
-    formData.append("subcategory", subcategory);
-    formData.append("token", token);
-    axios
-      .put("http://127.0.0.1:8000/addproduct/", formData)
-      .then((res) => {
-        console.log(res);
-        if (res.data.result.includes("success")) {
-          this.state.productAdded = true;
-          this.state.productError = false;
-        } else {
-          this.state.productError = true;
-          this.state.productAdded = false;
-          this.state.error = res.data.error;
-        }
-        this.forceUpdate();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-  editProduct(
-    productName,
-    description,
-    shortDescription,
-    price,
-    quantity,
-    image,
-    category,
-    subcategory,
-    originalName,
-    token
-  ) {
-    const formData = new FormData();
-    formData.append("productName", productName);
-    formData.append("description", description);
-    formData.append("shortDescription", shortDescription);
-    formData.append("price", price);
-    formData.append("quantity", quantity);
-    formData.append("image", image);
-    formData.append("category", category);
-    formData.append("subcategory", subcategory);
-    formData.append("originalName", originalName);
-    formData.append("token", token);
-    axios
-      .put("http://127.0.0.1:8000/editproduct/", formData)
-      .then((res) => {
-        console.log(res);
-        if (res.data.result.includes("success")) {
-          this.state.productAdded = true;
-          this.state.productError = false;
-        } else {
-          this.state.productError = true;
-          this.state.productAdded = false;
-          this.state.error = res.data.error;
-        }
-        this.forceUpdate();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
   linkSomewhereElse() {
+    console.log(this.props);
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -176,92 +75,57 @@ class ProductEditor extends React.PureComponent {
   handleCategoryDropdown = (e, { value }) => {
     this.state.categoryValue = value;
     this.state.category = this.state.categoriesOptions[value - 1].text;
-    this.getSubCategories(this.state.category);
-    this.state.subCategoryValue = 1;
-    this.state.subCategory = this.state.subCategoriesOptions[0].text;
-    this.state.changedCategory = true;
-    this.forceUpdate();
+    console.log(value);
+    console.log(this.state.categoriesOptions[value - 1].text);
+    getSubCategories(this.state.category, this);
   };
   handleSubmit = (e) => {
-    if (this.state.hasData) {
-      this.editProduct(
-        this.state.productName,
-        this.state.description,
-        this.state.shortDescription,
-        this.state.price,
-        this.state.quantity,
-        this.state.image,
-        this.state.category,
-        this.state.subCategory,
-        this.state.originalName,
-        this.state.token
-      );
+    if (this.state.subCategoriesOptions.length > 0) {
+      if (this.state.hasData) {
+        editProduct(
+          this,
+          this.state.productName,
+          this.state.description,
+          this.state.shortDescription,
+          this.state.price,
+          this.state.quantity,
+          this.state.image,
+          this.state.category,
+          this.state.subCategory,
+          this.state.originalName,
+          this.state.token
+        );
+      } else {
+        addProduct(
+          this,
+          this.state.productName,
+          this.state.description,
+          this.state.shortDescription,
+          this.state.price,
+          this.state.quantity,
+          this.state.image,
+          this.state.category,
+          this.state.subCategory,
+          this.state.token
+        );
+      }
     } else {
-      this.addProduct(
-        this.state.productName,
-        this.state.description,
-        this.state.shortDescription,
-        this.state.price,
-        this.state.quantity,
-        this.state.image,
-        this.state.category,
-        this.state.subCategory,
-        this.state.token
-      );
+      window.alert("Podkategoria jest wymagana");
     }
   };
   handleSubcategoryDropdown = (e, { value }) => {
-    console.log(value);
     this.state.subCategoryValue = value;
     this.state.subCategory = this.state.subCategoriesOptions[value - 1].text;
     this.state.subCategoryAfterChange = value;
     this.forceUpdate();
   };
   handleImageChange = (e) => {
-    console.log(e);
     this.state.imagePath = URL.createObjectURL(e.target.files[0]);
     this.state.image = e.target.files[0];
     this.forceUpdate();
   };
-  collectProductData(productName) {
-    axios
-      .get("http://127.0.0.1:8000/getproduct/" + productName + "/")
-      .then((res) => {
-        if (!res.data.error) {
-          console.log(res.data);
-          console.log(res.data[0]);
-          console.log(res.data[0].productName);
-          this.setState({ productName: res.data[0].productName });
-          this.setState({ description: res.data[0].description });
-          this.setState({ shortDescription: res.data[0].shortDescription });
-          this.setState({ price: res.data[0].price });
-          this.setState({ quantity: res.data[0].quantity });
-          this.setState({ category: res.data[0].category_id });
-          this.setState({ subCategory: res.data[0].subcategory_id });
-          this.setState({ originalName: res.data[0].productName });
-          this.setState({
-            imagePath: "http://127.0.0.1:8000/media/" + res.data[0].image,
-          });
-          this.setState({
-            categoryValue:
-              this.state.categoriesOptions
-                .map((e) => {
-                  console.log(e.text);
-                  console.log(res.data[0].category_id);
-                  return e.text;
-                })
-                .indexOf(res.data[0].category_id) + 1,
-          });
-          this.getSubCategories(res.data[0].category_id);
-          this.forceUpdate();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+
   getSubCategoryForProductEdit(subCategory) {
-    console.log("getSub");
     this.setState({
       subCategoryValue:
         this.state.subCategoriesOptions
@@ -272,37 +136,82 @@ class ProductEditor extends React.PureComponent {
     });
   }
 
+  handleRedirect = () => {
+    if (this.props.location.state !== undefined) {
+      this.props.history.push("/products", {
+        page: this.props.location.state.page,
+        howmany: this.props.location.state.howmany,
+      });
+    } else {
+      this.props.history.push("/products", {});
+    }
+  };
+  handleAddSubcategory = () => {
+    console.log(this.state.newSubcategory);
+    this.state.catError = "";
+    addSubcategory(
+      this,
+      this.state.newSubcategory,
+      this.state.category,
+      this.state.token
+    );
+    this.state.newSubcategory = "";
+  };
+  handleAddCategory = () => {
+    console.log(this.state.newCategory);
+    this.state.catError = "";
+    addCategory(this, this.state.newCategory, this.state.token);
+    this.state.newCategory = "";
+  };
+  handleInput = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
   render() {
-    const { authenticated, hasPerm, token } = this.props;
+    var { authenticated, hasPerm, token } = this.props;
+    hasPerm = localStorage.getItem("admin");
+    authenticated = localStorage.getItem("admin");
     this.state.token = token;
     if (authenticated && hasPerm) {
       var data = this.props.location.state;
-      if (!this.state.gotCategory) {
-        this.getAllCategories();
-        this.state.gotCategory = true;
-      }
+
       if (data && !this.state.gotEditProduct && this.state.gotCategory) {
         this.state.hasData = true;
-        this.collectProductData(data.productName);
+        collectProductData(data.productName, this);
         this.state.gotEditProduct = true;
+      }
+      if (!this.state.gotCategory) {
+        getAllCategories(this);
+        this.state.gotCategory = true;
       }
       if (
         data &&
         this.state.subCategoriesOptions.length > 0 &&
         this.state.subCategoryValue == 0
       ) {
-        this.getSubCategoryForProductEdit(this.state.subCategory);
+        getSubCategoryForProductEdit(this.state.subCategory, this);
       }
       if (!this.state.productAdded) {
         return (
           <React.Fragment>
             <div className="main-container-top">
               <div className="second-container-top">
-                {this.state.hasData ? (
-                  <h1 className="product-editor-header">Edycja produktu</h1>
-                ) : (
-                  <h1 className="product-editor-header">Dodawanie produktu</h1>
-                )}
+                <div>
+                  <Button
+                    color="green"
+                    className="product-editor-back"
+                    onClick={this.handleRedirect}
+                  >
+                    Back
+                  </Button>
+                  {this.state.hasData ? (
+                    <h1 className="product-editor-header">Edycja produktu</h1>
+                  ) : (
+                    <h1 className="product-editor-header">
+                      Dodawanie produktu
+                    </h1>
+                  )}
+                </div>
                 {this.state.imagePath.length > 0 ? (
                   <Image
                     id="image"
@@ -411,77 +320,262 @@ class ProductEditor extends React.PureComponent {
                   </Form.Group>
                   <Form.Group>
                     {this.state.hasData ? (
-                      <Dropdown
-                        id="category"
-                        name="category"
-                        required={true}
-                        onChange={this.handleCategoryDropdown}
-                        options={this.state.categoriesOptions}
-                        value={this.state.categoryValue}
-                        fluid
-                        placeholder="Wybierz kategorie ii"
-                        selection
-                        label="Wybierz kategorie"
-                      />
+                      <React.Fragment>
+                        <Dropdown
+                          id="category"
+                          name="category"
+                          required={true}
+                          onChange={this.handleCategoryDropdown}
+                          options={this.state.categoriesOptions}
+                          value={this.state.categoryValue}
+                          fluid
+                          placeholder="Wybierz kategorie ii"
+                          selection
+                          label="Wybierz kategorie"
+                          className="product-editor-dropdown-left"
+                        />
+                        <Popup
+                          trigger={
+                            <Label
+                              color="green"
+                              role=""
+                              className="product-editor-btn"
+                            >
+                              +
+                            </Label>
+                          }
+                          flowing
+                          hoverable
+                        >
+                          <Grid centered divided columns={1}>
+                            <Grid.Column textAlign="center">
+                              <Header as="h4">Category</Header>
+                              <Input
+                                onChange={this.handleInput}
+                                value={this.state.newCategory}
+                                name="newCategory"
+                                id="newCategory"
+                              ></Input>
+                              <Button
+                                color="green"
+                                onClick={this.handleAddCategory}
+                              >
+                                Dodaj
+                              </Button>
+                              {this.state.catError && (
+                                <Message>{this.state.catError}</Message>
+                              )}
+                            </Grid.Column>
+                          </Grid>
+                        </Popup>
+                      </React.Fragment>
                     ) : (
-                      <Dropdown
-                        id="category"
-                        name="category"
-                        required={true}
-                        onChange={this.handleCategoryDropdown}
-                        options={this.state.categoriesOptions}
-                        fluid
-                        placeholder="Wybierz kategorie"
-                        selection
-                        label="Wybierz kategorie"
-                      />
+                      <React.Fragment>
+                        <Dropdown
+                          id="category"
+                          name="category"
+                          required={true}
+                          onChange={this.handleCategoryDropdown}
+                          options={this.state.categoriesOptions}
+                          value={
+                            this.state.categoryValue > 0
+                              ? this.state.categoryValue
+                              : null
+                          }
+                          fluid
+                          placeholder="Wybierz kategorie"
+                          selection
+                          label="Wybierz kategorie"
+                          className="product-editor-dropdown-left"
+                        />
+                        <Popup
+                          trigger={
+                            <Label
+                              color="green"
+                              role=""
+                              className="product-editor-btn"
+                            >
+                              +
+                            </Label>
+                          }
+                          flowing
+                          hoverable
+                        >
+                          <Grid centered divided columns={1}>
+                            <Grid.Column textAlign="center">
+                              <Header as="h4">Category</Header>
+                              <Input
+                                onChange={this.handleInput}
+                                value={this.state.newCategory}
+                                name="newCategory"
+                                id="newCategory"
+                              ></Input>
+                              <Button
+                                color="green"
+                                onClick={this.handleAddCategory}
+                              >
+                                Dodaj
+                              </Button>
+                              {this.state.catError && (
+                                <Message>{this.state.catError}</Message>
+                              )}
+                            </Grid.Column>
+                          </Grid>
+                        </Popup>
+                      </React.Fragment>
                     )}
-
                     {this.state.hasData &&
                     this.state.category.length > 0 &&
                     !this.state.changedCategory ? (
-                      <Dropdown
-                        id="subCategory"
-                        name="subCategory"
-                        onChange={this.handleSubcategoryDropdown}
-                        options={this.state.subCategoriesOptions}
-                        value={this.state.subCategoryValue}
-                        required={true}
-                        disabled={false}
-                        fluid
-                        label="Wybierz podkategorie"
-                        placeholder="Wybierz podkategorie"
-                        selection
-                      />
-                    ) : this.state.category.length > 0 ? (
-                      <Dropdown
-                        id="subCategory"
-                        name="subCategory"
-                        onChange={this.handleSubcategoryDropdown}
-                        options={this.state.subCategoriesOptions}
-                        value={
-                          this.state.subCategoryAfterChange == 1
-                            ? 1
-                            : this.state.subCategoryValue
-                        }
-                        required={true}
-                        disabled={false}
-                        fluid
-                        label="Wybierz podkategorie"
-                        placeholder="Wybierz podkategorie"
-                        selection
-                      />
+                      <React.Fragment>
+                        <Dropdown
+                          id="subCategory"
+                          name="subCategory"
+                          onChange={this.handleSubcategoryDropdown}
+                          options={this.state.subCategoriesOptions}
+                          value={this.state.subCategoryValue}
+                          disabled={false}
+                          fluid
+                          label="Wybierz podkategorie"
+                          placeholder="Wybierz podkategorie"
+                          selection
+                        />
+                        <Popup
+                          trigger={
+                            <Label
+                              color="green"
+                              role=""
+                              className="product-editor-btn product-editor-dropdown-right"
+                            >
+                              +
+                            </Label>
+                          }
+                          flowing
+                          hoverable
+                        >
+                          <Grid centered divided columns={1}>
+                            <Grid.Column textAlign="center">
+                              <Header as="h4">Subcategory</Header>
+                              <Input
+                                onChange={this.handleInput}
+                                value={this.state.newSubcategory}
+                                name="newSubcategory"
+                                id="newSubcategory"
+                              ></Input>
+                              <Button
+                                color="green"
+                                onClick={this.handleAddSubcategory}
+                              >
+                                Dodaj
+                              </Button>
+                              {this.state.subcatError && (
+                                <Message>{this.state.subcatError}</Message>
+                              )}
+                            </Grid.Column>
+                          </Grid>
+                        </Popup>
+                      </React.Fragment>
+                    ) : this.state.category.length > 0 &&
+                      this.state.subCategoriesOptions.length > 0 ? (
+                      <React.Fragment>
+                        <Dropdown
+                          id="subCategory"
+                          name="subCategory"
+                          onChange={this.handleSubcategoryDropdown}
+                          options={this.state.subCategoriesOptions}
+                          value={
+                            this.state.subCategoryAfterChange == 1
+                              ? 1
+                              : this.state.subCategoryValue
+                          }
+                          disabled={false}
+                          fluid
+                          label="Wybierz podkategorie"
+                          placeholder="Wybierz podkategorie"
+                          selection
+                        />
+                        <Popup
+                          trigger={
+                            <Label
+                              color="green"
+                              role=""
+                              className="product-editor-btn product-editor-dropdown-right"
+                            >
+                              +
+                            </Label>
+                          }
+                          flowing
+                          hoverable
+                        >
+                          <Grid centered divided columns={1}>
+                            <Grid.Column textAlign="center">
+                              <Header as="h4">Subcategory</Header>
+                              <Input
+                                onChange={this.handleInput}
+                                value={this.state.newSubcategory}
+                                name="newSubcategory"
+                                id="newSubcategory"
+                              ></Input>
+                              <Button
+                                color="green"
+                                onClick={this.handleAddSubcategory}
+                              >
+                                Dodaj
+                              </Button>
+                              {this.state.subcatError && (
+                                <Message>{this.state.subcatError}</Message>
+                              )}
+                            </Grid.Column>
+                          </Grid>
+                        </Popup>
+                      </React.Fragment>
                     ) : (
-                      <Dropdown
-                        id="subCategory"
-                        onChange={this.handleSubcategoryDropdown}
-                        options={[]}
-                        className="product-editor-disabled"
-                        disabled={true}
-                        fluid
-                        placeholder="Najpierw wybierz kategorie"
-                        selection
-                      />
+                      <React.Fragment>
+                        <Dropdown
+                          id="subCategory"
+                          onChange={this.handleSubcategoryDropdown}
+                          options={[]}
+                          className="product-editor-disabled"
+                          disabled={true}
+                          fluid
+                          placeholder="Najpierw wybierz kategorie lud dodaj podkategorie"
+                          selection
+                        />
+                        <Popup
+                          trigger={
+                            <Label
+                              color="green"
+                              role=""
+                              className="product-editor-btn product-editor-dropdown-right"
+                            >
+                              +
+                            </Label>
+                          }
+                          flowing
+                          hoverable
+                        >
+                          <Grid centered divided columns={1}>
+                            <Grid.Column textAlign="center">
+                              <Header as="h4">Subcategory</Header>
+                              <Input
+                                onChange={this.handleInput}
+                                value={this.state.newSubcategory}
+                                name="newSubcategory"
+                                id="newSubcategory"
+                              ></Input>
+                              <Button
+                                color="green"
+                                onClick={this.handleAddSubcategory}
+                              >
+                                Dodaj
+                              </Button>
+                              {this.state.subcatError && (
+                                <Message>{this.state.subcatError}</Message>
+                              )}
+                            </Grid.Column>
+                          </Grid>
+                        </Popup>
+                      </React.Fragment>
                     )}
                   </Form.Group>
                   {this.state.hasData ? (

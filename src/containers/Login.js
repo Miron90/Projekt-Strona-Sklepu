@@ -34,7 +34,6 @@ class LoginForm extends React.Component {
       this.forceUpdate();
     }
   };
-
   render() {
     const { error, loading, token } = this.props;
     const { email, password } = this.state;
@@ -102,7 +101,7 @@ class LoginForm extends React.Component {
                 loading={loading}
                 disabled={loading}
               >
-                Zarejestruj
+                Zaloguj
               </Button>
             </fieldset>
           </Form>
@@ -118,7 +117,7 @@ class LoginForm extends React.Component {
 const mapStateToProps = (state) => {
   return {
     loading: state.auth.loading,
-    error: state.auth.error,
+    error: state.auth.loginError,
     token: state.auth.token,
   };
 };

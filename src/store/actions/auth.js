@@ -15,10 +15,17 @@ export const authSuccess = (token, admin) => {
   };
 };
 
-export const authFail = (error) => {
+export const authLoginFail = (error) => {
   return {
-    type: actionTypes.AUTH_FAIL,
-    error: error,
+    type: actionTypes.AUTH_LOGIN_FAIL,
+    loginError: error,
+  };
+};
+
+export const authRegisterFail = (error) => {
+  return {
+    type: actionTypes.AUTH_REGISTER_FAIL,
+    registerError: error,
   };
 };
 
@@ -48,22 +55,22 @@ export const authLogin = (email, password) => {
         password: password,
       })
       .then((res) => {
-        console.log(res);
         if (!res.data.error) {
           const token = res.data.key;
-          const hasPerm = res.data.perm;
+          const admin = res.data.perm;
           const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
           localStorage.setItem("token", token);
+          localStorage.setItem("admin", admin);
           localStorage.setItem("expirationDate", expirationDate);
-          dispatch(authSuccess(token, hasPerm));
+          dispatch(authSuccess(token, admin));
           dispatch(checkAuthTimeout(3600));
         } else {
-          console.log(res.data.error);
-          dispatch(authFail(res.data.error));
+          dispatch(authLoginFail(res.data.error));
+          return false;
         }
       })
       .catch((err) => {
-        dispatch(authFail(err));
+        dispatch(authLoginFail(err));
       });
   };
 };
@@ -87,11 +94,11 @@ export const authSignup = (username, email, password1, password2) => {
           dispatch(authSuccess(token));
           dispatch(checkAuthTimeout(3600));
         } else {
-          dispatch(authFail(res.data.error));
+          dispatch(authRegisterFail(res.data.error));
         }
       })
       .catch((err) => {
-        dispatch(authFail(err));
+        dispatch(authRegisterFail(err));
       });
   };
 };
@@ -99,7 +106,7 @@ export const authSignup = (username, email, password1, password2) => {
 export const authCheckState = () => {
   return (dispatch) => {
     const token = localStorage.getItem("token");
-    const token = localStorage.getItem("admin");
+    const admin = localStorage.getItem("admin");
     if (token === undefined) {
       dispatch(logout());
     } else {

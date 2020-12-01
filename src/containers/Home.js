@@ -14,6 +14,7 @@ import {
 class HomepageLayout extends React.Component {
   render() {
     const { authenticated } = this.props;
+
     return (
       <React.Fragment>
         {authenticated ? <h1>Jestes dobry</h1> : <h1>Jestes niedobry</h1>}

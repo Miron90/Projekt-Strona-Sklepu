@@ -3,7 +3,7 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS += ['http://domain.com']
+ALLOWED_HOSTS += ['http://domain.com', 'http://localhost:3000', 'http://localhost:8000']
 WSGI_APPLICATION = 'home.wsgi.prod.application'
 
 DATABASES = {

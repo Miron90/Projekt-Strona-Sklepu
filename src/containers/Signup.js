@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Grid, Header, Message, Segment } from "semantic-ui-react";
+import { Button, Grid, Header, Message, Popup } from "semantic-ui-react";
 
 import { connect } from "react-redux";
 import { NavLink, Redirect } from "react-router-dom";
@@ -25,7 +25,6 @@ class RegistrationForm extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    //wykonja validacje po stronie klienta
     const validateOutcome = validate(this.state);
     const validateError = validateOutcome.validateError;
     this.state = validateOutcome.state;
@@ -42,19 +41,18 @@ class RegistrationForm extends React.Component {
   };
 
   render() {
-    const { username, email, password1, password2 } = this.state;
-    const { error, loading, token } = this.props;
+    const { registerError, loading, token } = this.props;
     if (token) {
       return <Redirect to="/" />;
     }
     return (
       <div className="container">
         <div className="error">
-          {error &&
-            (this.props.error.message ? (
-              <p>{this.props.error.message}</p>
+          {registerError &&
+            (this.props.registerError.message ? (
+              <p>{this.props.registerError.message}</p>
             ) : (
-              <p>{this.props.error}</p>
+              <p>{this.props.registerError}</p>
             ))}
         </div>
         <div className="signUpForm">
@@ -67,6 +65,23 @@ class RegistrationForm extends React.Component {
                 <label className="control-label" htmlFor="username">
                   Nazwa użytkownika
                 </label>
+                <Popup
+                  trigger={
+                    <span
+                      style={{
+                        marginLeft: "20px",
+                        fontSize: "16px",
+                        backgroundColor: "#e0e0e0",
+                        padding: "8px",
+                      }}
+                    >
+                      ?
+                    </span>
+                  }
+                >
+                  1. Minimum 8 liter bądź cyfr <br></br> 2. Pierwsza litera musi
+                  być wielka
+                </Popup>
                 <div className="input-icons">
                   <input
                     id="username"
@@ -76,6 +91,7 @@ class RegistrationForm extends React.Component {
                     className="form-control input-field"
                     required={true}
                     onChange={this.handleChange}
+                    value={this.state.username}
                   />
                   <i className="icon-user icon"></i>
                   {this.state.usernameError && (
@@ -85,10 +101,27 @@ class RegistrationForm extends React.Component {
                   )}
                 </div>
               </div>
+
               <div className="form-group mb-4">
                 <label className="control-label" htmlFor="email">
                   Email
                 </label>
+                <Popup
+                  trigger={
+                    <span
+                      style={{
+                        marginLeft: "20px",
+                        fontSize: "16px",
+                        backgroundColor: "#e0e0e0",
+                        padding: "8px",
+                      }}
+                    >
+                      ?
+                    </span>
+                  }
+                >
+                  1. Wprowadź prawidłowy email
+                </Popup>
                 <div className="input-icons">
                   <input
                     id="email"
@@ -98,6 +131,7 @@ class RegistrationForm extends React.Component {
                     className="form-control input-field"
                     required={true}
                     onChange={this.handleChange}
+                    value={this.state.email}
                   />
                   <i className="icon-mail-alt icon"></i>
                   {this.state.emailError && (
@@ -109,6 +143,22 @@ class RegistrationForm extends React.Component {
                 <label className="control-label" htmlFor="password1">
                   Hasło
                 </label>
+                <Popup
+                  trigger={
+                    <span
+                      style={{
+                        marginLeft: "20px",
+                        fontSize: "16px",
+                        backgroundColor: "#e0e0e0",
+                        padding: "8px",
+                      }}
+                    >
+                      ?
+                    </span>
+                  }
+                >
+                  1. Hasło musi zawierać 8 znaków
+                </Popup>
                 <div className="input-icons">
                   <input
                     id="password1"
@@ -118,6 +168,7 @@ class RegistrationForm extends React.Component {
                     className="form-control input-field"
                     required={true}
                     onChange={this.handleChange}
+                    value={this.state.password1}
                   />
                   <i className="icon-lock icon"></i>
                   {this.state.password1Error && (
@@ -131,6 +182,22 @@ class RegistrationForm extends React.Component {
                 <label className="control-label" htmlFor="password2">
                   Powtórz hasło
                 </label>
+                <Popup
+                  trigger={
+                    <span
+                      style={{
+                        marginLeft: "20px",
+                        fontSize: "16px",
+                        backgroundColor: "#e0e0e0",
+                        padding: "8px",
+                      }}
+                    >
+                      ?
+                    </span>
+                  }
+                >
+                  1. Hasło musi zawierać 8 znaków
+                </Popup>
                 <div className="input-icons">
                   <input
                     id="password2"
@@ -140,6 +207,7 @@ class RegistrationForm extends React.Component {
                     className="form-control input-field"
                     required={true}
                     onChange={this.handleChange}
+                    value={this.state.password2}
                   />
                   <i className="icon-lock icon"></i>
                   {this.state.password2Error && (
@@ -178,7 +246,7 @@ class RegistrationForm extends React.Component {
 const mapStateToProps = (state) => {
   return {
     loading: state.auth.loading,
-    error: state.auth.error,
+    registerError: state.auth.registerError,
     token: state.auth.token,
   };
 };

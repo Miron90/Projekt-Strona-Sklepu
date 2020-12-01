@@ -3,7 +3,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SECRET_KEY = '-05sgp9!deq=q1nltm@^^2cc+v29i(tyybv3v2t77qi66czazj'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://localhost:3000', 'http://localhost:8000', 'http://127.0.0.1:3000']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'basket',
     'product',
 ]
+CORS_ORIGIN_ALLOW_ALL = False
+
 AUTH_USER_MODEL = 'account.Account'
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

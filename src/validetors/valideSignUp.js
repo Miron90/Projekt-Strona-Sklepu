@@ -19,7 +19,7 @@ function validateSignUp(state) {
     state.usernameError = "";
   }
   if (!emailPattern.test(state.email)) {
-    state.emailError = "Nie jest to prawidłowy adres email";
+    // state.emailError = "Nie jest to prawidłowy adres email";
   } else {
     state.emailError = "";
   }

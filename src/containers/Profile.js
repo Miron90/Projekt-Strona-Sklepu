@@ -6,12 +6,15 @@ import "../static/css/index.min.css";
 
 class Profile extends React.Component {
   render() {
-    const { authenticated, gotPermission } = this.props;
+    var { authenticated, gotPermission } = this.props;
+
+    authenticated = localStorage.getItem("token");
+    gotPermission = localStorage.getItem("admin");
     return (
       <React.Fragment>
         <div className="main-container">
           <div className="second-container">
-            {authenticated && gotPermission ? (
+            {authenticated && gotPermission == "true" ? (
               <Link to="/products">
                 <h1>Sprawdź produkty</h1>
               </Link>
