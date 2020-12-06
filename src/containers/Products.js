@@ -8,8 +8,10 @@ import {
   Pagination,
   Form,
   Message,
+  Icon,
 } from "semantic-ui-react";
 import Product from "../components/ProductComponent";
+import Dictaphone from "../components/Dictaphone";
 import { search, getx2Products } from "../fetch/fetchProducts";
 
 import "../static/css/index.min.css";
@@ -84,7 +86,10 @@ class Products extends React.Component {
     this.state.page = 1;
     this.setState({ [e.target.name]: e.target.value });
   };
-
+  handleSearchChange(text) {
+    this.state.search = text;
+    this.forceUpdate();
+  }
   render() {
     var { authenticated, hasPerm, token } = this.props;
     hasPerm = localStorage.getItem("admin");
@@ -137,8 +142,9 @@ class Products extends React.Component {
                       onChange={this.handleInputChange}
                       placeholder="Nazwa produktu"
                     />
+                    <Dictaphone parent={this}></Dictaphone>
                     <Button
-                      color="teal"
+                      color="blue"
                       htmlFor="search"
                       className="products-size-large"
                       onClick={this.handleSearch}

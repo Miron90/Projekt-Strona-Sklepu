@@ -1,13 +1,21 @@
 from product.models import Products, Category, SubCategory
 from rest_framework import serializers
 from PIL import Image
+import urllib.request
+from django.core.files.uploadedfile import UploadedFile
+import requests
 
 
 class ProductSerializer(serializers.ModelSerializer):
 
+    image = serializers.ImageField(required=False, allow_null=True)
+    image_url = serializers.URLField(required=False, allow_null=True)
+
+
     class Meta:
         model = Products
-        fields = ['productName', 'description', 'image', 'shortDescription', 'price', 'quantity', 'category', 'subcategory']
+        fields = ['productName', 'description', 'image', 'shortDescription', 'price', 'quantity', 'category', 'subcategory', 'image_url']
+
 
     def update(self, instance, data):
         instance.productName = data.get('productName', instance.productName)
@@ -20,6 +28,12 @@ class ProductSerializer(serializers.ModelSerializer):
         instance.subcategory = data.get('subcategory', instance.subcategory)
         instance.save()
         return instance
+
+    """ def create(self, validated_data):
+        response = requests.get(validated_data['image_url'])
+        validated_data['image'] = requests.get(validated_data['image_url']).content
+
+        return Products.objects.create(**validated_data) """
 
 
 class CategorySerializer(serializers.ModelSerializer):

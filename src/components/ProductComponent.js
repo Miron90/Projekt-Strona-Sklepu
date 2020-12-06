@@ -43,7 +43,7 @@ class Product extends React.Component {
               <h4 className="product-price">Cena: {product.price}zł</h4>
             </div>
             <div className="product-shortDescription">
-              Opis: {product.shortDescription}
+              {product.shortDescription}
             </div>
           </div>
           <div className="produxct-flex-right">
@@ -72,7 +72,7 @@ class Product extends React.Component {
               content="Usuń produkt"
               trigger={
                 <Button
-                  className="product-delete"
+                  className="product-edit"
                   color="red"
                   onClick={() =>
                     deleteProduct(

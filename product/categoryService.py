@@ -9,6 +9,14 @@ class CategoryService:
         return Category.objects.all().order_by('name').values()
 
     def addNewCategory(self, data):
+        if 'admin' in data:
+            serializer = CategorySerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return
+            else:
+                serializer.errors
+                return 
         token = data['token']
         user = Token.objects.get(key=token).user
         if user:

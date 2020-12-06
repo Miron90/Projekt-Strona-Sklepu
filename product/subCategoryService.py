@@ -9,6 +9,14 @@ class SubcategoryService:
         return SubCategory.objects.filter(Q(categoryId=slug)).order_by('name').values()
 
     def addNewSubcategory(self, data):
+        if 'admin' in data:
+            serializer = SubcategorySerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return
+            else:
+                serializer.errors
+                return
         token = data['token']
         user = Token.objects.get(key=token).user
         if user:

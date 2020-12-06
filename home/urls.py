@@ -5,6 +5,11 @@ from django.conf.urls import include
 from API import views
 from django.conf.urls.static import static
 from django.conf import settings
+from threading import Thread
+from product.products_scrapper import scrapper
+from product.models import Products, SubCategory
+from product.subCategoryService import SubcategoryService
+from django.db.models import Q
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
@@ -30,5 +35,15 @@ urlpatterns = [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += re_path(r'^.*', TemplateView.as_view(template_name='index.html')),
+
+
+def start_new_thread(function):
+    if not Products.objects.all().count() > 0:
+        t = Thread(target=function)
+        t.daemon = True
+        t.start()
+
+
+start_new_thread(scrapper)
 
 # include('rest_auth.registration.urls')

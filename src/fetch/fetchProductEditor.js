@@ -53,16 +53,20 @@ export function getSubCategories(
             categoriesOptions[i] = { text: res.data[i].name, value: i + 1 };
           }
           productsClass.state.subCategoriesOptions = categoriesOptions;
-          productsClass.state.subCategoryValue = 1;
-          productsClass.state.subCategory =
-            productsClass.state.subCategoriesOptions[0].text;
+
+          console.log(productsClass.state.subCategory);
+          if (productsClass.state.subCategory) {
+          } else {
+            productsClass.state.subCategoryValue = 1;
+            productsClass.state.subCategory =
+              productsClass.state.subCategoriesOptions[0].text;
+          }
           productsClass.state.changedCategory = productsClass;
           if (newValue) {
             productsClass.setState({
               subCategoryValue:
                 productsClass.state.subCategoriesOptions
                   .map((e) => {
-                    console.log(e.text, subcategory);
                     return e.text;
                   })
                   .indexOf(subcategory) + 1,

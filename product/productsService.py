@@ -9,11 +9,22 @@ from rest_framework.authtoken.models import Token
 class ProductService:
     def add_product(self, data):
         results = {}
+        user = ''
+        admin = ''
+        if 'admin' in data:
+            admin = data['admin']
+            serializer = ProductSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                results['result'] = 'success'
+            else:
+                print(serializer.errors)
+            return
         token = data['token']
         user = Token.objects.get(key=token).user
-        if user:
-            if user.has_perm():
-                serializer = ProductSerializer(data=request.data)
+        if user or 'yes' in admin:
+            if user.has_perm() or 'yes' in admin:
+                serializer = ProductSerializer(data=data)
                 if serializer.is_valid():
                     serializer.save()
                     results['result'] = 'success'

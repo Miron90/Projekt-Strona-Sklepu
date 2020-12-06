@@ -75,8 +75,6 @@ class ProductEditor extends React.PureComponent {
   handleCategoryDropdown = (e, { value }) => {
     this.state.categoryValue = value;
     this.state.category = this.state.categoriesOptions[value - 1].text;
-    console.log(value);
-    console.log(this.state.categoriesOptions[value - 1].text);
     getSubCategories(this.state.category, this);
   };
   handleSubmit = (e) => {
@@ -134,6 +132,8 @@ class ProductEditor extends React.PureComponent {
           })
           .indexOf(subCategory) + 1,
     });
+    this.state.subCategoryAfterChange = this.state.subCategoryValue;
+    this.forceUpdate();
   }
 
   handleRedirect = () => {
@@ -189,7 +189,7 @@ class ProductEditor extends React.PureComponent {
         this.state.subCategoriesOptions.length > 0 &&
         this.state.subCategoryValue == 0
       ) {
-        getSubCategoryForProductEdit(this.state.subCategory, this);
+        this.getSubCategoryForProductEdit(this.state.subCategory, this);
       }
       if (!this.state.productAdded) {
         return (
