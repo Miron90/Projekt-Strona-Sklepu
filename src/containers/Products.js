@@ -136,21 +136,22 @@ class Products extends React.Component {
                     <Input
                       id="search"
                       name="search"
-                      className="large"
+                      className="large products-search-input"
                       icon="search"
                       value={this.state.search}
                       onChange={this.handleInputChange}
                       placeholder="Nazwa produktu"
                     />
-                    <Dictaphone parent={this}></Dictaphone>
+
                     <Button
                       color="blue"
                       htmlFor="search"
-                      className="products-size-large"
+                      className="products-size-large products-search"
                       onClick={this.handleSearch}
                     >
                       Szukaj
                     </Button>
+                    <Dictaphone parent={this}></Dictaphone>
                   </Form>
                 </div>
                 <div className="products-see">

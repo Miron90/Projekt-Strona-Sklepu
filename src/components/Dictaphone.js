@@ -30,7 +30,6 @@ const Dictaphone = (e) => {
   return (
     <Button
       icon="microphone"
-      htmlFor="search"
       className="products-size-large products-microphone "
       color={color}
       onClick={handleMicrophone}
