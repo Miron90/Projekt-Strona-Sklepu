@@ -31,6 +31,8 @@ urlpatterns = [
 
     path('addcategory/', views.categories, name='add-user'),
     path('getallcategories/', views.categories, name='add-user'),
+    path('updateuser/', views.update_profile, name='add-user'),
+    path('payment/', views.payment, name='add-user'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
@@ -38,12 +40,17 @@ urlpatterns += re_path(r'^.*', TemplateView.as_view(template_name='index.html'))
 
 
 def start_new_thread(function):
+    # Products.objects.all().delete()
     if not Products.objects.all().count() > 0:
+        t = Thread(target=function)
+        t.daemon = True
+        t.start()
+    else:
         t = Thread(target=function)
         t.daemon = True
         t.start()
 
 
-start_new_thread(scrapper)
+# start_new_thread(scrapper)
 
 # include('rest_auth.registration.urls')

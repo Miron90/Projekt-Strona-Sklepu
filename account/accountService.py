@@ -3,6 +3,7 @@ from rest_framework.authtoken.models import Token
 from account.models import Account
 from django.db.models import Q
 import datetime
+from account.serializers import UpdateProfile
 
 
 class AccountService:
@@ -30,6 +31,19 @@ class AccountService:
                 return results
             else:
                 return results
+    
+    def update_user(self, request):
+        user = Token.objects.get(key=request.data['token']).user
+        print(user)
+        print('tutaj')
+        serializer = UpdateProfile(user, data=request.data)
+        if serializer.is_valid():
+            account = serializer.save(user)
+            print('zapisane')
+            # results['key'] = Token.objects.get(user=account).key
+        else:
+            print(serializer.errors)
+        print('dziala')
                 
     def authUser(self, data):
         email = data.get('email')

@@ -17,12 +17,10 @@ const Dictaphone = (e) => {
       SpeechRecognition.startListening();
     } else if (color == "red") {
       setColor("teal");
-
       setTimeout(() => {
         SpeechRecognition.stopListening();
         console.log(transcript);
         e.parent.handleSearchChange(transcript);
-        console.log(e.parent.state);
         resetTranscript();
       }, 2000);
     }

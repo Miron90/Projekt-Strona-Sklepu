@@ -47,6 +47,9 @@ class CustomLayout extends React.Component {
                   <Link to="/profile">
                     <Menu.Item header>Profil</Menu.Item>
                   </Link>
+                  <Link to="/profile/editor">
+                    <Menu.Item header>Edycja profilu</Menu.Item>
+                  </Link>
                 </Menu>
               )}
             </Container>

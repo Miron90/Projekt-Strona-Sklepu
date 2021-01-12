@@ -135,3 +135,22 @@ def add_subcategory(request):
         results = SubcategoryService().addNewSubcategory(request.data)
         return Response(results, HTTP_200_OK)
     return Response(results, HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def update_profile(request):
+    results = {}
+    AccountService().update_user(request)
+    # if request.method == 'POST':
+    #     results = ProductService().edit_product(request.data)
+    #     return Response(results, HTTP_200_OK)
+    return Response(results, HTTP_200_OK)
+
+@api_view(["PUT"])
+def payment(request):
+    results = {}
+    if request.method == 'PUT':
+        results = ProductService().delete(request.data)
+        return Response(results, HTTP_200_OK)
+    return Response(results, HTTP_400_BAD_REQUEST)
+

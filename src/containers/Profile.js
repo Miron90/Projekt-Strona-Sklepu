@@ -15,9 +15,12 @@ class Profile extends React.Component {
         <div className="main-container">
           <div className="second-container">
             {authenticated && gotPermission == "true" ? (
-              <Link to="/products">
-                <h1>Sprawdź produkty</h1>
-              </Link>
+              <div>
+                <h1> Witaj Użytkowniku</h1>
+                <Link to="/products">
+                  <h1>Edytuj Produkty</h1>
+                </Link>
+              </div>
             ) : authenticated ? (
               <h1> Jestes legitny</h1>
             ) : (

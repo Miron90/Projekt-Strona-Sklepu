@@ -134,3 +134,12 @@ class ProductService:
         results['query'] = data = Products.objects.filter(productName__contains=search)[minimum:maximum].values()
         results['allProducts'] = Products.objects.filter(productName__contains=search).count()
         return results
+    
+    def delete(self, request):
+        print(request)
+        product = Products.objects.filter(Q(productName=request['productName'])).first()
+        print(product.quantity)
+        product.quantity=product.quantity-int(request['quantity'])
+        product.save()
+        return {"OK"}
+
