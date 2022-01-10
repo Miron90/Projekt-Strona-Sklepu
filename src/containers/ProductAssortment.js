@@ -89,6 +89,7 @@ class Products extends React.Component {
   };
   handleSearchChange(text) {
     this.state.search = text;
+    this.handleSearch();
     this.forceUpdate();
   }
   render() {

@@ -15,6 +15,7 @@ from product.categoryService import CategoryService
 from product.subCategoryService import SubcategoryService
 from product.productsService import ProductService
 from account.accountService import AccountService
+from basket.basketService import BasketService
 import datetime
 """ from pytesseract import pytesseract
 from PIL import Image
@@ -146,11 +147,45 @@ def update_profile(request):
     #     return Response(results, HTTP_200_OK)
     return Response(results, HTTP_200_OK)
 
-@api_view(["PUT"])
+@api_view(["POST"])
 def payment(request):
     results = {}
-    if request.method == 'PUT':
+    if request.method == 'POST':
         results = ProductService().delete(request.data)
+        BasketService().deleteCart(request.data['token'])
         return Response(results, HTTP_200_OK)
     return Response(results, HTTP_400_BAD_REQUEST)
 
+@api_view(["GET"])
+def get_sub_categories(request, slug):
+    results = {}
+    if request.method == 'GET':
+        results = SubcategoryService().getAllSubcategoriesOrderByNameFilteredBySlug(slug)
+        return Response(results, HTTP_200_OK)
+    return Response(results, HTTP_400_BAD_REQUEST)
+
+@api_view(["PUT"])
+def add_to_cart(request):
+    results = {}
+    if request.method == 'PUT':
+        results = BasketService().add_to_cart(request.data)
+        return Response(results, HTTP_200_OK)
+    return Response(results, HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def get_basket(request, token):
+    results = {}
+    if request.method == 'GET':
+        results = BasketService().get_basket(token)
+        return Response(results, HTTP_200_OK)
+    return Response(results, HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def delete_from_basket(request):
+    results = {}
+    if request.method == 'POST':
+        results = BasketService().delete_from_basket(request.data['productName'], request.data['token'])
+        return Response(results, HTTP_200_OK)
+    return Response(results, HTTP_400_BAD_REQUEST)

@@ -33,6 +33,9 @@ urlpatterns = [
     path('getallcategories/', views.categories, name='add-user'),
     path('updateuser/', views.update_profile, name='add-user'),
     path('payment/', views.payment, name='add-user'),
+    path('cart/', views.add_to_cart, name='add-user'),
+    path('basket/<token>/', views.get_basket, name='add-user'),
+    path('deletefrombasket/', views.delete_from_basket, name='add-user'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
@@ -40,17 +43,20 @@ urlpatterns += re_path(r'^.*', TemplateView.as_view(template_name='index.html'))
 
 
 def start_new_thread(function):
-    # Products.objects.all().delete()
+    print("xdd")
+    Products.objects.all().delete()
     if not Products.objects.all().count() > 0:
+        print("xdd")
         t = Thread(target=function)
         t.daemon = True
         t.start()
     else:
+        print("xdd222")
         t = Thread(target=function)
         t.daemon = True
         t.start()
 
 
-# start_new_thread(scrapper)
+start_new_thread(scrapper)
 
 # include('rest_auth.registration.urls')

@@ -5,7 +5,60 @@ from product.categoryService import CategoryService
 from product.subCategoryService import SubcategoryService
 from rest_framework.authtoken.models import Token
 
+"""Klasa ProductSevice, której zadaniem jest oddzielenie działania bazy danych od operacji
+Metody:
+add_product(self, data): funkcja odpowiedzialna za komunikacje z bazą danych oraz dodanie danego rekordu do bazy danych
+zmienne: 
+data: zmienna zawierające dane o dodawanym produkcie w formacie JSON
+Zwraca:
+Ciąg znaków informujący o efekcie zapytania
 
+get_products_per_page_products(self, data, page, howManyPerPage): funkcja odpowiedzialna za komunikacje z bazą danych w celu otrzymania listy produktów dla zadanej strony
+Zmienne:
+data: Zawiera informacje o produktach otzrymanych z zapytania
+page: liczba wskazująca dla której strony pobierane są produkty
+howManyPerPage: liczba wskazująca ile produktów należy pobrać dla danej strony
+
+Zwraca:
+Listę produktów dla danej strony
+
+delete_product(self, data): funkcja odpowiedzialna za usuwanie produktu z bazy danych
+Zmienne:
+data: zmienna zawirająca informacje o usuwanym rekordzie (produkcie)
+
+Zwraca:
+Ciąg znaków informujący o efekcie zapytania
+
+get_product_by_name(self, data): funkcja odpowiedzialna za pobieranie produktu z bazy danych
+Zmienne:
+data: zmienna zawierająca informacje o rekordzie (produkcie), który chcemy uzyskać
+
+Zwraca:
+Produkt w formacie JSON
+
+edit_product(self, data):funkcja odpowiedzialna za edytowanie produktu w bazy danych
+Zmienne:
+data: zmienna zawierająca informacje o edytowanym rekordzie (produkcie)
+
+Zwraca:
+Ciąg znaków informujący o efekcie zapytania
+
+search_product(self, search, page, slug):funkcja odpowiedzialna za poszukiwaniu produktów w bazie danych
+Zmienne:
+search: zmienna zawierająca informacje o frazie jaką zawierać musi nazwa produktu
+page: liczba reprezentująca aktualna stronę użytownika
+slug: liczba reprezentujące masymalna ilość stron przy zadanych założeniach
+
+Zwraca:
+listę Produktów spełniających zapytanie
+
+delete(self, request):funkcja odpowiedzialna za usuwanie zadanej ilości produktów z bazy danych 
+Zmienne:
+request: liczba informująca ile produktów usunąć z magazynu sklepu
+
+Zwraca:
+Ciąg znaków informujący o efekcie zapytania
+"""
 class ProductService:
     def add_product(self, data):
         results = {}
@@ -136,10 +189,12 @@ class ProductService:
         return results
     
     def delete(self, request):
-        print(request)
-        product = Products.objects.filter(Q(productName=request['productName'])).first()
-        print(product.quantity)
-        product.quantity=product.quantity-int(request['quantity'])
-        product.save()
+        print(request['products'])
+        for temp in request['products']:
+            product = Products.objects.filter(Q(productName=temp['productName'])).first()
+            print(product.quantity)
+            product.quantity = product.quantity - int(temp['quantity'])
+            product.save()
+        
         return {"OK"}
 

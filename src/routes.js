@@ -10,6 +10,8 @@ import Products from "./containers/Products";
 import ProduictEditor from "./containers/ProductEditor";
 import ProfileEditor from "./containers/ProfileEditor";
 import ProductAssortment from "./containers/ProductAssortment";
+import Cart from "./containers/Cart";
+import Basket from "./containers/Basket"
 
 const BaseRouter = () => (
   <Hoc>
@@ -21,6 +23,8 @@ const BaseRouter = () => (
     <Route path="/product/editor" component={ProduictEditor} />
     <Route exact path="/profile/editor" component={ProfileEditor} />
     <Route path="/product/show" component={ProductAssortment} />
+    <Route path="/cart" component={Cart} />
+    <Route path="/basket" component={Basket} />
   </Hoc>
 );
 

@@ -7,6 +7,7 @@ import "../static/css/index.min.css";
 import "../static/css/fontello.css";
 import "../static/css/ProductAssortment.min.css";
 import { useState } from "react";
+import addToBasket from "../cart/addToCart";
 /*
 function deleteProduct(productName, token, rerenderParentCallback) {
   if (window.confirm("Na pewno chcesz usunąć tyen przedmiot?")) {
@@ -35,6 +36,7 @@ class Product extends React.Component {
     status: false,
     howmany: 0,
     howmanydeleted: 0,
+    buttonclicked: false,
   };
 
   onAdd = (name, value) => {
@@ -60,6 +62,19 @@ class Product extends React.Component {
       this.setState({ status: false });
     }
     this.setState({ howmany: e.target.value });
+  };
+  handleAddToCart = (e) => {
+    console.log(this);
+    this.state.buttonclicked = true;
+    if (this.props.product.quantity > 0) {
+      addToBasket(
+        this.props.product.productName,
+        this.state.howmany,
+        this.props.product.price,
+        this.props.token
+      );
+    }
+    this.forceUpdate();
   };
   render() {
     const {
@@ -109,37 +124,15 @@ class Product extends React.Component {
               onChange={this.handleChange}
             ></input>
 
-            {this.state.status ? (
-              <PayWithPayPal
-                productName={product.productName}
-                quantity={this.state.howmany}
-                total={
-                  Math.round(product.price * this.state.howmany * 100) / 100
-                }
-                rerenderParentCallback={this.rerenderParentCallback}
-                e={this}
-              ></PayWithPayPal>
-            ) : (
-              <Button
-                className="checkout-button"
-                onClick={() => {
-                  console.log(this.state.howmany);
-                  if (
-                    this.state.howmany > 0 &&
-                    product.quantity >= this.state.howmany
-                  ) {
-                    this.setState({ isCheckout: true });
-                    this.setState({ status: true });
-                    console.log(this.state.status);
-                  } else {
-                    this.setState({ status: false });
-                  }
-                }}
-              >
-                Zapłać PayPal
-              </Button>
-            )}
+            <Button className="checkout-button" onClick={this.handleAddToCart}>
+              Dodaj do koszyka
+            </Button>
           </div>
+          {product.quantity < 1 && this.state.buttonclicked ? (
+            <h6 className="errorBasket">Brak w magazynie</h6>
+          ) : (
+            <div></div>
+          )}
         </div>
         {/* <Home
           onAdd={this.onAdd}

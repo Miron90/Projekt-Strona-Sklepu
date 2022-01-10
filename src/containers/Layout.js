@@ -33,15 +33,15 @@ class CustomLayout extends React.Component {
                   </Menu.Item>
                 </React.Fragment>
               ) : (
-                <React.Fragment>
-                  <Link to="/login">
-                    <Menu.Item header>Zaloguj</Menu.Item>
-                  </Link>
-                  <Link to="/signup">
-                    <Menu.Item header>Zarejestruj</Menu.Item>
-                  </Link>
-                </React.Fragment>
-              )}
+                  <React.Fragment>
+                    <Link to="/login">
+                      <Menu.Item header>Zaloguj</Menu.Item>
+                    </Link>
+                    <Link to="/signup">
+                      <Menu.Item header>Zarejestruj</Menu.Item>
+                    </Link>
+                  </React.Fragment>
+                )}
               {authenticated && (
                 <Menu inverted className="second-menu">
                   <Link to="/profile">
@@ -49,6 +49,9 @@ class CustomLayout extends React.Component {
                   </Link>
                   <Link to="/profile/editor">
                     <Menu.Item header>Edycja profilu</Menu.Item>
+                  </Link>
+                  <Link to="/basket">
+                    <Menu.Item header>Koszyk</Menu.Item>
                   </Link>
                 </Menu>
               )}

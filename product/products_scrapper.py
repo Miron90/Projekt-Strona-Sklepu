@@ -15,24 +15,44 @@ from io import BytesIO
 from django.db.models import Q
 from PIL import Image
 
-
+"""Plik zawierający funkcje odpowiedzialne za pobieranie danych z sieci
+Metody:
+getAllSubcategoriesForCategory(link): Funkcja pobierająca linki wszystkich podkategorii dla danej categorii zadanej w zmiennej link
+addAllCatAndSubcat(cat, subcat): Funkcja dodająca rekordy pobrane ze strony
+cat: zmienna potrzebna do testów wskazuje na rekord kategorii dodany do bazy danych
+subcat: zmienna potrzebna do testów wskazuje na rekord podkategorii dodany do bazy danych
+findDescAndImage(link): Funkcja szukająca zdjęcia danego w zmiennej link produktu oraz pobranie jego opisu
+goToAllSubcategoriesAndGetAll(links, cat, subcat): Funkcja odpowiedzialna za przechodzenie pomiędzy wszystkimi podkategoriami i zapisaniu ich w liście 
+zmienne: 
+links: zawiera listę linków otzrymanych z funkcji scrapper
+cat: zmienna potrzebna do testów wskazuje na rekord kategorii dodany do bazy danych
+subcat: zmienna potrzebna do testów wskazuje na rekord podkategorii dodany do bazy danych
+scrapper(): Główna funkcja odpowiedzialna za zestawienie połączenia z serwerem sklepu oraz pobraniem odpowiednich linków produktów oraz dodanie otrzymanych produktów do bazy danych
+"""
 def getAllSubcategoriesForCategory(link):
+    print(link)
     r = requests.get(link)
     soup = BeautifulSoup(r.text, "lxml")
     body = soup.body
     categories = body.find('div', {'id': 'category'})
-    allAnchors = categories.findAll('a', {'class': 's-facet-tree__link'})
+    allAnchors = categories.findAll('a', {'class': 's-anchor s-anchor--interactive'})
     allLinks = []
     allSubcategories = []
     for x in allAnchors:
+        print("123")
+        print(x['href'])
         allLinks.append("https://www.lidl-sklep.pl" + x['href'])
         allSubcategories.append(x.find("span").text)
-    for x in allSubcategories:
-        allSubcategories.pop(0)
-        break
-    for x in allLinks:
-        allLinks.pop(0)
-        break
+    # for x in allSubcategories:
+    #     print("12345")
+    #     print(x)
+    #     allSubcategories.pop(0)
+    #     break
+    # for x in allLinks:
+    #     print("12367")
+    #     print(x)
+    #     allLinks.pop(0)
+    #     break
     return (allLinks, allSubcategories)
 
 
@@ -41,10 +61,15 @@ def addAllCatAndSubcat(cat, subcat):
     i = 0
     for x in cat:
         j = 0
+        print("11")
+        print(x)
         
         datacat = {'admin': 'yes', 'name': x}
         CategoryService().addNewCategory(datacat)
+        print(i)
+        print(subcat)
         for y in subcat[i]:
+            print(y)
             data = {'admin': 'yes', 'name': y, 'categoryId': x}
             SubcategoryService().addNewSubcategory(data)
         i = i + 1
@@ -56,14 +81,15 @@ def findDescAndImage(link):
     body = soup.body
     imgAnchor = body.find('img', {'class': 'gallery-image__img'})
     descDivs = body.find('div', {'class': 'space p-tb'})
-    li = descDivs.findAll('li')
-    imgsrc = imgAnchor['src']
-    desc = ''
-    for x in li:
-        desc = desc + ' ' + str(x.text.strip())
+    if descDivs is not None:
+        li = descDivs.findAll('li')
+        imgsrc = imgAnchor['src']
+        desc = ''
+        for x in li:
+            desc = desc + ' ' + str(x.text.strip())
     # print(imgsrc)
     # print(desc)
-    return imgsrc, desc
+        return imgsrc, desc
 
 
 def goToAllSubcategoriesAndGetAll(links, cat, subcat):
@@ -121,7 +147,7 @@ def goToAllSubcategoriesAndGetAll(links, cat, subcat):
                 else:
                     break
                 howManyProducts = howManyProducts - 1
-                # print(productName.text.strip())
+                print(productName.text.strip())
                 # print(price.text.strip())
             # print(howManyProducts)
             j = j + 1
@@ -130,30 +156,41 @@ def goToAllSubcategoriesAndGetAll(links, cat, subcat):
 
 def scrapper():
     r = requests.get("https://www.lidl-sklep.pl/")
+    print("xdd")
     soup = BeautifulSoup(r.text, "lxml")
     body = soup.body
+    print("xdd")
     ol = body.find('ol', {'class': 'n-header__main-navigation n-header__main-navigation--sub'})
     allAnchors = ol.findAll('a', {'class': 'n-header__main-navigation-link n-header__main-navigation-link--sub'})
     allCategories = ol.findAll('span', {'class': 'n-header__main-navigation-link-text'})
     allLinksList = []
+    print("xdd")
     for x in allAnchors:
-        allLinksList.append('https://www.lidl-sklep.pl' + x['href'])
-    allLinksList.remove('https://www.lidl-sklep.pl' + '/h/warsztat-i-auto/h10000994')
-    allLinksList.remove('https://www.lidl-sklep.pl' + '/h/dziecko/h10000995')
+        print(x['href'][0:5])
+        if x['href'][0:5] != "https":
+            allLinksList.append('https://www.lidl-sklep.pl' + x['href'])
+    print(allLinksList)
+    allLinksList.remove('https://www.lidl-sklep.pl' + '/h/pieluchy-i-pantsy-lupilu/h10007596?path=/10007596')
     allCategoriesList = []
     for x in allCategories:
         allCategoriesList.append(x.text)
-    allCategoriesList.remove('Warsztat i auto')
-    allCategoriesList.remove('Dziecko')
+    allCategoriesList.remove('Wyprzedaż')
+    allCategoriesList.remove('Pieluchy i pantsy Lupilu')
+    allCategoriesList.remove('Zabawki')
+    allCategoriesList.remove('Testy na Covid-19')
+    # allCategoriesList.remove('Warsztat i auto')
+    # allCategoriesList.remove('Dziecko')
     slug = []
     for x in allLinksList:
+        print(x)
         slug.append(getAllSubcategoriesForCategory(x))
     allSubcategoriesList = []
     allSubcategoriesLinks = []
+    print(slug)
     for x in slug:
         allSubcategoriesList.append(x[1])
         allSubcategoriesLinks.append(x[0])
-    # print(allCategoriesList)
+    print(allCategoriesList)
     # print(allLinksList)
     # print(allSubcategories)
     addAllCatAndSubcat(allCategoriesList, allSubcategoriesList)
