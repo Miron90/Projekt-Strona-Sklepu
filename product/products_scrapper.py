@@ -61,15 +61,9 @@ def addAllCatAndSubcat(cat, subcat):
     i = 0
     for x in cat:
         j = 0
-        print("11")
-        print(x)
-        
         datacat = {'admin': 'yes', 'name': x}
         CategoryService().addNewCategory(datacat)
-        print(i)
-        print(subcat)
         for y in subcat[i]:
-            print(y)
             data = {'admin': 'yes', 'name': y, 'categoryId': x}
             SubcategoryService().addNewSubcategory(data)
         i = i + 1
@@ -134,11 +128,7 @@ def goToAllSubcategoriesAndGetAll(links, cat, subcat):
                     path = 'D:\\ProjektStronaSklepu\\' + str(x) + '.jpeg'
                     category = CategoryService().get_category_by_id(cat[i])
                     subcategory = SubcategoryService().get_subcategory_by_id(subcat[i][j])
-                    print(subcategory)
-                    print(category)
-                    print(productName.text.strip())
-                    print(desc)
-                    print(shortdesc)
+                    print(imgsrc)
 
                     if not Products.objects.filter(Q(productName=productName.text.strip())).count() > 0:
                         p = Products.objects.create(productName=productName.text.strip(), description=desc, shortDescription=shortdesc, price=priceToFloat, quantity=quantity, category=category, subcategory=subcategory, image_url=imgsrc)

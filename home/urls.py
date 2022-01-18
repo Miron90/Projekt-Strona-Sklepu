@@ -56,7 +56,6 @@ def start_new_thread(function):
         t.daemon = True
         t.start()
 
-
-start_new_thread(scrapper)
+#start_new_thread(scrapper)
 
 # include('rest_auth.registration.urls')

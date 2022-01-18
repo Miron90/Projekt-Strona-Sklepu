@@ -27,8 +27,8 @@ class BasketService:
         results = []
         for product in products:
             temp=Products.objects.filter(Q(productName = product['productId'])).first()
-            results.append({'quantity': product['quantity'], 'product': {'imagePath': temp.image_url,'productName':temp.productName,'price':temp.price}})
-        print(results)
+            if temp is not None:
+                results.append({'quantity': product['quantity'], 'product': {'imagePath': temp.image_url,'productName':temp.productName,'price':temp.price}})
         final = {"result": results}
         return final
     
